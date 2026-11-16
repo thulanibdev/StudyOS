@@ -1,42 +1,39 @@
-# 📚 StudyOS — Student Productivity Dashboard
+# StudyOS
 
-A full-featured student productivity app built with **Next.js 14** and **Tailwind CSS**. No account needed — everything saves to your browser automatically.
+A student productivity dashboard for tasks, notes, flashcards and focused study.
+
+[Live demo](https://study-os-swart.vercel.app/) · [Source](https://github.com/thulanibdev/StudyOS)
 
 ## Features
 
-- **📋 Tasks** — Add assignments with subject, priority, due date, and notes. See overdue alerts and filter by subject.
-- **🃏 Flashcards** — Create decks, add Q&A cards, and study with a flip card interface.
-- **⏱ Focus Timer** — Pomodoro timer with 25/5/15 minute modes. Tracks your daily focus sessions.
-- **📝 Notes** — Rich notes organized by subject with color coding and search.
+Task management, notes, flashcard decks and a Pomodoro timer.
 
-## Getting Started
+The timer uses elapsed wall-clock time so delayed browser intervals do not add time to a session. Completed focus sessions are recorded once.
+
+## Stack and data
+
+Next.js 14, React, Tailwind CSS and browser localStorage.
+
+Browser-stored data belongs to the current browser profile. It does not sync to a user account, and clearing site data removes it. This is a portfolio project in ongoing development.
+
+## Run locally
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/studyos.git
-cd studyos
-
-# 2. Install dependencies
-npm install
-
-# 3. Run the dev server
+npm ci
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) — no API keys or setup needed!
+Open http://localhost:3000. No API credentials are needed.
 
-## Deploy to Vercel
+## Verification
 
-1. Push to GitHub
-2. Import on [vercel.com](https://vercel.com)
-3. Click Deploy — done! No environment variables needed.
+```bash
+npm test
+npm run build
+```
 
-## Tech Stack
+The tests cover the project's persistence or business logic and error cases. They do not validate third-party services or prove that every live-demo feature works.
 
-- [Next.js 14](https://nextjs.org) — React framework
-- [Tailwind CSS](https://tailwindcss.com) — Styling
-- localStorage — All data persists in the browser, no backend needed
+## Development priorities
 
-## License
-
-MIT
+Improve accessibility, document design decisions and add integration coverage as the project develops. Keep secret keys in local environment configuration and out of Git.

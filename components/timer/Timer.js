@@ -19,36 +19,41 @@ export default function Timer() {
   const total = mode.minutes * 60
   const progress = ((total - seconds) / total) * 100
 
+  const deadlineRef = useRef(null)
+  const remainingRef = useRef(seconds)
+  const taskRef = useRef(task)
+  taskRef.current = task
+
   useEffect(() => {
-    if (running) {
-      intervalRef.current = setInterval(() => {
-        setSeconds(s => {
-          if (s <= 1) {
-            clearInterval(intervalRef.current)
-            setRunning(false)
-            if (modeIndex === 0) {
-              setSessions(prev => [...prev, { id: Date.now(), task: task || 'Focus session', duration: mode.minutes, date: new Date().toISOString() }])
-            }
-            return 0
-          }
-          return s - 1
-        })
-      }, 1000)
-    } else {
-      clearInterval(intervalRef.current)
+    if (!running) return
+    deadlineRef.current = Date.now() + remainingRef.current * 1000
+    const tick = () => {
+      const left = Math.max(0, Math.ceil((deadlineRef.current - Date.now()) / 1000))
+      remainingRef.current = left
+      setSeconds(left)
+      if (left === 0) {
+        clearInterval(intervalRef.current)
+        setRunning(false)
+        if (modeIndex === 0) {
+          setSessions(previous => [...previous, { id: crypto.randomUUID(), task: taskRef.current || 'Focus session', duration: mode.minutes, date: new Date().toISOString() }])
+        }
+      }
     }
+    intervalRef.current = setInterval(tick, 250)
     return () => clearInterval(intervalRef.current)
-  }, [running, modeIndex])
+  }, [running, modeIndex, mode.minutes, setSessions])
 
   const switchMode = (i) => {
     setRunning(false)
     setModeIndex(i)
-    setSeconds(MODES[i].minutes * 60)
+    remainingRef.current = MODES[i].minutes * 60
+    setSeconds(remainingRef.current)
   }
 
   const reset = () => {
     setRunning(false)
-    setSeconds(mode.minutes * 60)
+    remainingRef.current = mode.minutes * 60
+    setSeconds(remainingRef.current)
   }
 
   const mm = String(Math.floor(seconds / 60)).padStart(2, '0')
@@ -114,7 +119,13 @@ export default function Timer() {
       <div className="flex justify-center gap-3 mb-10">
         <button onClick={reset} className="w-12 h-12 rounded-full border border-border text-ink-light hover:border-ink hover:text-ink transition-colors text-lg">↺</button>
         <button
-          onClick={() => setRunning(r => !r)}
+          onClick={() => {
+            if (!running && remainingRef.current === 0) {
+              remainingRef.current = total
+              setSeconds(total)
+            }
+            setRunning(r => !r)
+          }}
           className={`w-24 h-12 rounded-full font-body font-semibold text-sm text-white transition-all ${mode.bg} hover:opacity-90`}
         >
           {running ? 'Pause' : seconds === total ? 'Start' : 'Resume'}
